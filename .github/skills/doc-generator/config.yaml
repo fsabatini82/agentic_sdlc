@@ -1,0 +1,36 @@
+# ============================================================
+# DOCUMENT GENERATOR — BRANDING CONFIGURATION
+# ============================================================
+# Customize this file to match your team/company branding.
+# The doc-generator skill reads this to produce branded output.
+# ============================================================
+
+branding:
+  company: "Acme Corp"
+  logo: "./assets/logo.svg"
+  primary_color: "#4361ee"
+  secondary_color: "#1a1a2e"
+  accent_color: "#ffd700"
+  font_family: "Inter, system-ui, -apple-system, sans-serif"
+  heading_font: "Inter, system-ui, -apple-system, sans-serif"
+
+document:
+  title: "Project Documentation"
+  subtitle: "Architecture & API Reference"
+  author: "Engineering Team"
+  version: "1.0"
+  date: "auto"
+
+# Sections appear in this order in the document.
+# Comment out any section you don't need.
+sections:
+  - project-overview
+  - architecture
+  - api-reference
+  - data-model
+  - coding-conventions
+  - getting-started
+
+output:
+  format: "html"
+  path: "./docs/project-docs.html"

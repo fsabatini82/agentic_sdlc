@@ -1,0 +1,48 @@
+name: Code Quality Analysis
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 6 * * 1'  # Every Monday at 6 AM UTC
+
+permissions:
+  contents: read
+
+jobs:
+  code-quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install Copilot CLI
+        run: npm install -g @github/copilot
+
+      - name: Run Code Quality Analysis
+        env:
+          COPILOT_GITHUB_TOKEN: ${{ secrets.COPILOT_PAT }}
+        run: |
+          copilot -p "Analyze this .NET codebase for code quality issues:
+
+          1. God classes: controllers or classes exceeding 200 lines with mixed responsibilities
+          2. Duplicated logic: same code pattern repeated in multiple methods
+          3. Missing service layer: business logic in controllers instead of dedicated services
+          4. Magic strings: hardcoded string constants that should be enums
+          5. Synchronous I/O: database calls without async/await
+          6. Missing error handling: empty catch blocks, swallowed exceptions
+          7. Side effects in GET: any GET endpoint that modifies data
+          8. Missing pagination: list endpoints returning unbounded results
+          9. Blocking calls: Thread.Sleep or similar in request pipeline
+
+          For each finding: file, description, impact, refactoring suggestion.
+          Prioritize by impact (highest first).
+          Write to code-quality-report.md" \
+            --allow-tool=read \
+            --allow-tool=write \
+            --no-ask-user
+
+      - name: Display Report
+        run: cat code-quality-report.md >> "$GITHUB_STEP_SUMMARY"

@@ -1,0 +1,48 @@
+name: Security Scan Report
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  security-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install Copilot CLI
+        run: npm install -g @github/copilot
+
+      - name: Run Security Scan
+        env:
+          COPILOT_GITHUB_TOKEN: ${{ secrets.COPILOT_PAT }}
+        run: |
+          copilot -p "Scan this entire codebase for security vulnerabilities:
+
+          1. SQL injection (FromSqlRaw with string interpolation)
+          2. Hardcoded secrets or credentials (appsettings.json, source files)
+          3. Missing input validation on user-supplied data
+          4. PII exposure without authorization (salary, email in API responses)
+          5. Missing authentication on sensitive endpoints
+          6. OWASP Top 10 issues
+
+          For each finding provide:
+          - Severity: CRITICAL / HIGH / MEDIUM / LOW
+          - File and approximate line number
+          - Description of the vulnerability
+          - Proof of concept (how to exploit)
+          - Recommended fix with code example
+
+          Write the complete report to security-report.md" \
+            --allow-tool=read \
+            --allow-tool=write \
+            --no-ask-user
+
+      - name: Display Report
+        run: cat security-report.md >> "$GITHUB_STEP_SUMMARY"
